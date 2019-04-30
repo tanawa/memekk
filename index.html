@@ -1,159 +1,135 @@
+<!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+	<title></title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-<title>
-สร้างมีมกรงกรรม
-</title>
+<script src="https://www.gstatic.com/firebasejs/5.10.1/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBgej8wRzG-5J4vZNDP_nku75OlhAUhetM",
+    authDomain: "webv-cb0d0.firebaseapp.com",
+    databaseURL: "https://webv-cb0d0.firebaseio.com",
+    projectId: "webv-cb0d0",
+    storageBucket: "webv-cb0d0.appspot.com",
+    messagingSenderId: "612538720203"
+  };
+  firebase.initializeApp(config);
+  var username,login=false;
+  x=0;
+  y=0;
+  
+  function logins(){
+  	username=document.getElementById("name").value;
+  	login=true;
+  	console.log(username);
+  	ref=firebase.database().ref("main/"+username);
+  	ref.set({player:username,x:x,y:y});
+  	document.getElementById("main").style.display="block";
+  	document.getElementById("login").style.display="none";
+  	ref=firebase.database().ref("main");
+    console.log("connect");
+  }
+
+
+
+</script>
 <style>
-@import url('https://fonts.googleapis.com/css?family=Prompt');
-canvas{
-margin:10pt;
-border:10px solid #0072bc;
+#canvas{
+	border:1px solid #ddd;
 }
-body{
-padding-top:20pt;
-background-color:#282828;
+#main{
+  /*display:none;*/
 }
-p{
-font-family: 'Prompt', sans-serif;
-color:#fff;
-}
-a{
-margin:10px 20px;
-font-family: 'Prompt', sans-serif;
-background-color:#0072bc;
-padding:10px 25px;
-border-radius:1px;
-text-decoration:none;
-margin:10px 25px;
-color:#fff;
-transition:all 0.5s ease;
-width:100%;
-}
-a:hover{
-opacity:0.5;
-}
-input[type="file"]{
-font-family: 'Prompt', sans-serif;
-border:1px solid #0072bc;
-padding:10px 25px;
-border-radius:15px;
-text-decoration:none;
-margin:10px 25px;
-color:#0072bc;
-text-aglin:center;
-outline:none;
-}
-input[type="file"]::-webkit-file-upload-button{
-visibility:hidden;
-}
-input[type="file"]:hover{
-opacity:0.5;
-}
-
-.slider {
-  -webkit-appearance: none;
-  height: 25px;
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-}
-
-
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  background: #0072bc;
-  cursor: pointer;
-}
-
-.slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  background: #4CAF50;
-  cursor: pointer;
-}
-.main{
-widht:100%;
-
-}
-.container{
-widht:100%;
-}
-@media only screen and (max-width:600px){
-canvas{
-width:300px;
-}
+#login{
+	display: block;
 }
 </style>
 </head>
 <body>
-
-<div class="main">
-<center>
-<canvas id="canvas" width="500" height="500" ></canvas>
-</center>
+<div id="login">
+	<input type="text" name="" id="name"><button onclick="logins()">ตกลง</button>
 </div>
-<div class="container"><center>
-<input type="file" id="file"/>
-<p>ตำแหน่งx</p>
-<input type="range" min="1" max="500" value="0" onchange="volum()" id="width" class="slider"><br />
-<p>ตำแหน่งy</p>
-<input type="range" min="1" max="500" value="0" onchange="volum()" id="height" class="slider"><br />
-<p>ความกว้าง</p>
-<input type="range" min="1" max="1000" value="0" onchange="volum()" id="scaleHeight" class="slider"><br />
-<p>ความสูง</p>
-<input type="range" min="1" max="1000" value="0" onchange="volum()" id="scaleWidth" class="slider"><br /><br /><br />
-<a href="" id="downloads" download>โหลดรูปภาพนี้</a></center><br />
+<div id="main">
+	<canvas id="canvas" width="900" height="900">
+	</canvas>
 </div>
-
-
-
-
-<script crossorigin="anonymous">
-var width=0,height=0,scalewidth=0,scaleheight=0;
+<script>
 var ctx=document.getElementById("canvas").getContext("2d");
-var img=new Image();
-var logo=new Image();
-var files;
-var data;
-img.onload=function(){
-ctx.drawImage(img,0,0,500,500);
-ctx.drawImage(logo,340,440,160,60);
-};
-img.src="https://www.img.live/images/2019/04/19/57511581_428145991063454_8247742637583368192_n.png";
-logo.src="https://www.img.in.th/images/a841e20cae23e1261663f476455638a6.png";
-const btn=document.getElementById("file");
-var img2=new Image();
-btn.addEventListener('change',function(e){
-files=e.target.files[0];
-console.log(files.name);
-img2.onload=function(){
-ctx.drawImage(img2,0,0,200,200,250,0,250,250);
-};
-img2.src=files.name;
+var img=new  Image();
+var img2=new Array();
+var positionX=new Array();
+var positionY=new Array();
+login=false;
+function connect(image,id){
+  for(i=-1;i<=id;i++){
+    img2[i]=new Image();
+  }
+  
+  //let y=img2[id];
+  img2[id].onload=function(){
+  //ctx.drawImage(img,0,0,100,100);
+  for(i=-1;i<=id;i++){
+    ctx.drawImage(img2[i],positionX[i],positionY[i],100,100);
+  }
+     }
+//img.src="bg.jpg";
+for(i=-1;i<=id;i++){
+    img2[i].src=image;
+  }
 
-});
-function volum(){
-width=document.getElementById("width").value;
-height=document.getElementById("height").value;
-scaleheight=document.getElementById("scaleHeight").value;
-scalewidth=document.getElementById("scaleWidth").value;
-img2.onload=function(){
-ctx.drawImage(img2,width,height,scalewidth,scaleheight,250,0,250,250);
-};
-img2.src=files.name;
-data=canvas.toDataURL('image/png',0.5);
-console.log(data);
-document.getElementById("downloads").href=data;
+console.log("ss");
 }
 
 
-</script>
 
+ref=firebase.database().ref("main");
+  ref.on("value",function(snapshot){
+  	if(snapshot.val()!=null && login==true){
+  		img.onload=function(){
+        ctx.drawImage(img,0,0,800,800);
+      }
+      img.src="bg.jpg";
+  		let id=-1;
+  		snapshot.forEach(function(data){
+  			id+=1;
+  			data.forEach(function(ingame){
+  				
+  				if(ingame.key=="x"){
+  					console.log("x "+ingame.val());
+            positionX[id]=ingame.val();
+  				}else if(ingame.key=="y"){
+  					console.log("y "+ingame.val());
+            positionY[id]=ingame.val();
+  				}else if(ingame.key=="player"){
+  					console.log("player "+ingame.val());
+  				}
+  			});
+  			console.log("x : "+x+" y : "+y);
+
+      connect("https://image.fnbr.co/outfit/5ab155f4e9847b3170da0321/png.png",id);
+  		});
+  	}
+
+  },function(err){
+
+  });
+  document.addEventListener("keydown",function(e){
+if(login){
+
+    if(e.key=="a" ){
+      x-=10;
+    }else if(e.key=="d"){
+      x+=10;
+    }else if(e.key=="w"){
+      y-=10;
+    }else if(e.key=="s"){
+      y+=10;
+    }
+    ref=firebase.database().ref("main/"+username);
+    ref.set({player:username,x:x,y:y});
+}
+  });
+</script>
 </body>
 </html>
